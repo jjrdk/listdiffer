@@ -1,0 +1,34 @@
+# pyproject.toml
+
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "object-diff"
+version = "0.1.0"
+description = "Generate diffs on lists of objects"
+readme = "README.md"
+authors = [{ name = "Jacob Reimers", email = "pypi@reimers.io" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["lcs", "diff", "delta"]
+dependencies = [
+    'dataclasses',
+    'typing',
+    'enum',
+    'tomli; python_version < "3.11"',
+]
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+dev = ["pip-tools", "pytest"]
+
+[project.urls]
+Homepage = "https://github.com/jjrdk/object_diff"
+
+[project.scripts]
