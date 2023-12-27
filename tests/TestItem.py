@@ -10,4 +10,4 @@ class TestItem:
         return self.text == other.text and self.value == other.value
 
     def __hash__(self):
-        return hash(self.text + self.value.__str__())
+        return hash((self.text , self.value))
