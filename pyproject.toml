@@ -18,9 +18,7 @@ classifiers = [
 ]
 keywords = ["lcs", "diff", "delta"]
 dependencies = [
-    'dataclasses',
-    'typing',
-    'enum',
+    'typing > 3.0.0',
     'tomli; python_version < "3.11"',
 ]
 requires-python = ">=3.9"
