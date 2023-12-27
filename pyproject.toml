@@ -27,6 +27,6 @@ requires-python = ">=3.9"
 dev = ["pip-tools", "pytest"]
 
 [project.urls]
-Homepage = "https://github.com/jjrdk/object_diff"
+Homepage = "https://github.com/jjrdk/objectdiff"
 
 [project.scripts]
