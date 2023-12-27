@@ -94,7 +94,7 @@ def _write_inserted_lines(diff_entry: Delta[T], text2_lines: list[T], add_format
     range_lines = text2_lines[diff_entry.start_compared: diff_entry.start_compared + diff_entry.inserted_compared]
     for line in range_lines:
         result_lines.append(add_formatting[0])
-        result_lines.append(line)
+        result_lines.append("{}".format(line))
         result_lines.append(add_formatting[1])
 
 
@@ -104,7 +104,7 @@ def _write_untouched_lines(deltas: list[Delta[T]], x: int, text1_lines: list[T],
     count = item.start_source - offset
     untouched = text1_lines[offset:offset + count]
     for line in untouched:
-        result_lines.append(line)
+        result_lines.append("{}".format(line))
         result_lines.append(LINEBREAK)
     return item
 
@@ -113,7 +113,7 @@ def _write_deleted_lines(diff_entry: Delta[T], text1_lines, result_lines, remove
     for i in range(diff_entry.deleted_source):
         line = text1_lines[diff_entry.start_source + i]
         result_lines.append(remove_formatting[0])
-        result_lines.append(line)
+        result_lines.append("{}".format(line))
         result_lines.append(remove_formatting[1])
     result_lines.append(LINEBREAK)
 
