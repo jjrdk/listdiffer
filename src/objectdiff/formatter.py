@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import TypeVar, Generic
-from src.object_diff.differ import diff, Delta
+from src.objectdiff.differ import diff, Delta
 
 T = TypeVar('T')
 
@@ -14,12 +14,16 @@ LINEBREAK = "<br/>"
 class Change(Enum):
     """Defines the different types of changes"""
     UNCHANGED = 0
+    """Item is unchanged between the two lists."""
     ADDED = 1
+    """Item is added to the compared list."""
     REMOVED = 2
+    """Item is removed from the source list."""
 
 
 class Compared(Generic[T]):
     """Defines the comparison of an item against a base list"""
+
     def __init__(self, item: T, change: Change):
         self.item: T = item
         self.change: Change = change
@@ -45,17 +49,20 @@ def format_items(diffs: list[Delta], source: list[T], other: list[T]) -> list[Co
 
 
 def format_diff_text_as_html(a: str, b: str,
-                             add_formatter: lambda: (str, str) = None,
-                             remove_formatter: lambda: (str, str) = None) -> str:
-    text1_lines = list(map(lambda x: x.rstrip('\r'), a.split('\n')))
-    text2_lines = list(map(lambda x: x.rstrip('\r'), b.split('\n')))
+                             add_formatter: (str, str) = (START_BOLD, END_BOLD),
+                             remove_formatter: (str, str) = (START_DEL, END_DEL)) -> str:
+    def clean(x):
+        return x.rstrip('\r')
+
+    text1_lines = list(map(clean, a.split('\n')))
+    text2_lines = list(map(clean, b.split('\n')))
 
     return format_diff_as_html(text1_lines, text2_lines, add_formatter, remove_formatter)
 
 
 def format_diff_as_html(source: list[T], compared: list[T],
-                        add_formatter: lambda: (str, str) = None,
-                        remove_formatter: lambda: (str, str) = None) -> str:
+                        add_formatter: (str, str) = (START_BOLD, END_BOLD),
+                        remove_formatter: (str, str) = (START_DEL, END_DEL)) -> str:
     """
     Outputs the difference between the lists as an HTML string.
 
@@ -65,15 +72,13 @@ def format_diff_as_html(source: list[T], compared: list[T],
     :param remove_formatter: A function producing the HTML tags for removed items.
     :return: An HTML formatted string.
     """
-    add_tuple: (str, str) = _emphasize() if add_formatter is None else add_formatter()
-    remove_tuple: (str, str) = _delete() if remove_formatter is None else remove_formatter()
     deltas = diff(source, compared)
     result_lines = []
 
     for x in range(len(deltas)):
         item = _write_untouched_lines(deltas, x, source, result_lines)
-        _write_deleted_lines(item, source, result_lines, remove_tuple)
-        _write_inserted_lines(item, compared, add_tuple, result_lines)
+        _write_deleted_lines(item, source, result_lines, remove_formatter)
+        _write_inserted_lines(item, compared, add_formatter, result_lines)
 
     return ''.join(result_lines)
 
@@ -88,14 +93,15 @@ def _delete() -> (str, str):
 
 def _write_inserted_lines(diff_entry: Delta[T], text2_lines: list[T], add_formatting: (str, str),
                           result_lines: list[str]):
+    (start, end) = add_formatting
     if diff_entry.inserted_compared <= 0:
         return
 
     range_lines = text2_lines[diff_entry.start_compared: diff_entry.start_compared + diff_entry.inserted_compared]
     for line in range_lines:
-        result_lines.append(add_formatting[0])
+        result_lines.append(start)
         result_lines.append("{}".format(line))
-        result_lines.append(add_formatting[1])
+        result_lines.append(end)
 
 
 def _write_untouched_lines(deltas: list[Delta[T]], x: int, text1_lines: list[T], result_lines: list[str]):
@@ -110,11 +116,12 @@ def _write_untouched_lines(deltas: list[Delta[T]], x: int, text1_lines: list[T],
 
 
 def _write_deleted_lines(diff_entry: Delta[T], text1_lines, result_lines, remove_formatting: (str, str)):
+    (start, end) = remove_formatting
     for i in range(diff_entry.deleted_source):
         line = text1_lines[diff_entry.start_source + i]
-        result_lines.append(remove_formatting[0])
+        result_lines.append(start)
         result_lines.append("{}".format(line))
-        result_lines.append(remove_formatting[1])
+        result_lines.append(end)
     result_lines.append(LINEBREAK)
 
 

@@ -27,7 +27,7 @@ class _DiffData:
 
 
 def diff_text(text_source: str, text_compared: str, trim_space: bool = False, ignore_space: bool = False) \
-        -> list[Delta[T]]:
+        -> list[Delta[chr]]:
     """
     Calculates the difference between two strings using the longest common sequence algorithm.
 
@@ -35,14 +35,16 @@ def diff_text(text_source: str, text_compared: str, trim_space: bool = False, ig
     :param text_compared: The text to compare
     :param trim_space: True if the texts should be trimmed
     :param ignore_space: True if the texts should be compared ignoring spaces in the text
-    :return: A list of DiffEntry describing the differences
+    :return: A list of Delta[chr] describing the differences
     """
+    def convert(text: str) -> list[int]:
+        return [ord(c) for c in text if (True if c != ' ' else not ignore_space)]
     if trim_space:
         text_source = text_source.strip()
         text_compared = text_compared.strip()
-    source_chars = [ord(c) for c in text_source.strip() if (True if c != ' ' else not ignore_space)]
-    compare_chars = [ord(c) for c in text_compared if (True if c != ' ' else not ignore_space)]
-    d: list[Delta] = diff(source_chars, compare_chars)
+    source_chars = convert(text_source)
+    compare_chars = convert(text_compared)
+    d: list[Delta[int]] = diff(source_chars, compare_chars)
     return list(map(lambda x: Delta(x.start_source,
                                     x.start_compared,
                                     x.deleted_source,
@@ -50,7 +52,7 @@ def diff_text(text_source: str, text_compared: str, trim_space: bool = False, ig
                                     list(map(lambda y: chr(y), x.added))), d))
 
 
-def diff(source: list[T], compared: list[T]) -> list[Delta]:
+def diff(source: list[T], compared: list[T]) -> list[Delta[T]]:
     """
     Calculates the difference between two lists of objects using the longest common sequence algorithm.
 

@@ -1,5 +1,5 @@
 from unittest import TestCase
-from src.object_diff.differ import diff, diff_text, apply_deltas
+from src.objectdiff.differ import diff, diff_text, apply_deltas
 from tests.TestItem import TestItem
 
 

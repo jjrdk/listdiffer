@@ -19,11 +19,11 @@ Calculate a diff between two strings
 #### Same strings
 
 ```python
-from src.object_diff.differ import diff_text
+from objectdiff import differ
 
 first = 'string'
 second = 'string'
-diff = diff_text(first, second, False, False)
+diff = differ.diff_text(first, second, False, False)
 
 assert len(diff) == 0
 ```
@@ -31,11 +31,11 @@ assert len(diff) == 0
 #### Different strings
 
 ```python
-from src.object_diff.differ import diff_text
+from objectdiff import differ
 
 first = 'first string'
 second = 'second string'
-diff = diff_text(first, second, False, False)
+diff = differ.diff_text(first, second, False, False)
 
 assert len(diff) == 1
 ```
@@ -47,11 +47,11 @@ Calculate a diff between two strings
 #### Same arrays
 
 ```python
-from src.object_diff.differ import compared
+from objectdiff import differ
 
 first = [1, 2, 3]
 second = [1, 2, 3]
-d = compared(first, second)
+d = differ.diff(first, second)
 
 assert len(d) == 0
 ```
@@ -59,11 +59,11 @@ assert len(d) == 0
 #### Different arrays
 
 ```python
-from src.object_diff.differ import compared
+from objectdiff import differ
 
 first = [1, 2, 3]
 second = [1, 2, 4]
-d = compared(first, second)
+d = differ.diff(first, second)
 
 assert len(d) == 1
 ```
