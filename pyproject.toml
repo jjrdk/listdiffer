@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "objectdiff"
-version = "0.1.0"
+version = "0.1.1"
 description = "Generate diffs on lists of objects"
 readme = "README.md"
 authors = [{ name = "Jacob Reimers", email = "pypi@reimers.io" }]
@@ -19,9 +19,9 @@ classifiers = [
 keywords = ["lcs", "diff", "delta"]
 dependencies = [
     'typing > 3.0.0',
-    'tomli; python_version < "3.11"',
+    'tomli; python_version >= "3.8"',
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.8"
 
 [project.optional-dependencies]
 dev = ["pip-tools", "pytest"]

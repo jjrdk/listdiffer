@@ -29,14 +29,26 @@ class TestDiffer(TestCase):
         self.assertEqual(1, len(result))
 
     def test_equal_array(self):
-        source = [1,2,3]
-        compare = [1,2,3]
+        source = [1, 2, 3]
+        compare = [1, 2, 3]
+        result = diff(source, compare)
+        self.assertEqual(0, len(result))
+
+    def test_equal_object_array(self):
+        source = [TestItem('test', 1), TestItem('test', 2), TestItem('test', 3)]
+        compare = [TestItem('test', 1), TestItem('test', 2), TestItem('test', 3)]
         result = diff(source, compare)
         self.assertEqual(0, len(result))
 
     def test_not_equal_array(self):
-        source = [1,2,3]
-        compare = [1,2,3, 4]
+        source = [1, 2, 3]
+        compare = [1, 2, 3, 4]
+        result = diff(source, compare)
+        self.assertEqual(1, len(result))
+
+    def test_not_equal_object_array(self):
+        source = [TestItem('test', 1), TestItem('test', 2), TestItem('test', 3)]
+        compare = [TestItem('test', 1), TestItem('test', 2), TestItem('test', 3), TestItem('test', 4)]
         result = diff(source, compare)
         self.assertEqual(1, len(result))
 

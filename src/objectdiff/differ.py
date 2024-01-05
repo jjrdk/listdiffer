@@ -214,8 +214,9 @@ def _create_diffs(data_a: _DiffData, data_b: _DiffData, other: list[T]) -> list[
 
 def _diff_items(source: list[T], h: typing.Dict[T, int]) -> list[int]:
     count = len(h)
-    num_array = [0] * len(source)
-    for i in range(len(source)):
+    source_length = len(source)
+    num_array = [0] * source_length
+    for i in range(source_length):
         index2 = source[i]
 
         if index2 not in h:

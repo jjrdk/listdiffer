@@ -1,6 +1,6 @@
 # Object Diff
 
-Version: 0.1.0
+Version: 0.1.1
 
 Calculates longest common sequence on text, lists of numbers or characters, or lists of objects.
 
@@ -40,11 +40,11 @@ diff = differ.diff_text(first, second, False, False)
 assert len(diff) == 1
 ```
 
-### Example 2 - Array of integers
+### Example 2 - List of integers
 
 Calculate a diff between two strings
 
-#### Same arrays
+#### Same lists
 
 ```python
 from objectdiff import differ
@@ -56,7 +56,7 @@ d = differ.diff(first, second)
 assert len(d) == 0
 ```
 
-#### Different arrays
+#### Different lists
 
 ```python
 from objectdiff import differ
@@ -66,4 +66,52 @@ second = [1, 2, 4]
 d = differ.diff(first, second)
 
 assert len(d) == 1
+```
+
+## Example 3 - Lists of objects
+
+### Same lists
+
+```python
+from objectdiff import differ
+
+@dataclass
+class TestItem:
+    text: str
+    value: int
+
+    def __eq__(self, other):
+        return self.text == other.text and self.value == other.value
+
+    def __hash__(self):
+        return hash((self.text, self.value))
+
+source = [TestItem('test', 1), TestItem('test', 2), TestItem('test', 3)]
+compare = [TestItem('test', 1), TestItem('test', 2), TestItem('test', 3)]
+result = differ.diff(source, compare)
+
+assert len(result) == 0
+```
+
+### Different lists
+
+```python
+from objectdiff import differ
+
+@dataclass
+class TestItem:
+    text: str
+    value: int
+
+    def __eq__(self, other):
+        return self.text == other.text and self.value == other.value
+
+    def __hash__(self):
+        return hash((self.text, self.value))
+
+source = [TestItem('test', 1), TestItem('test', 2), TestItem('test', 3)]
+compare = [TestItem('test', 1), TestItem('test', 2), TestItem('test', 3), TestItem('test', 4)]
+result = differ.diff(source, compare)
+
+assert len(result) == 1
 ```
