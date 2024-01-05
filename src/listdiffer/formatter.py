@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import TypeVar, Generic
-from src.objectdiff.differ import diff, Delta
+from src.listdiffer.differ import diff, Delta
 
 T = TypeVar('T')
 
