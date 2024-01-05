@@ -1,4 +1,4 @@
-# Object Diff
+# List Differ
 
 Version: 0.1.1
 
@@ -19,7 +19,7 @@ Calculate a diff between two strings
 #### Same strings
 
 ```python
-from objectdiff import differ
+from listdiffer import differ
 
 first = 'string'
 second = 'string'
@@ -31,7 +31,7 @@ assert len(diff) == 0
 #### Different strings
 
 ```python
-from objectdiff import differ
+from listdiffer import differ
 
 first = 'first string'
 second = 'second string'
@@ -47,7 +47,7 @@ Calculate a diff between two strings
 #### Same lists
 
 ```python
-from objectdiff import differ
+from listdiffer import differ
 
 first = [1, 2, 3]
 second = [1, 2, 3]
@@ -59,7 +59,7 @@ assert len(d) == 0
 #### Different lists
 
 ```python
-from objectdiff import differ
+from listdiffer import differ
 
 first = [1, 2, 3]
 second = [1, 2, 4]
@@ -73,7 +73,7 @@ assert len(d) == 1
 ### Same lists
 
 ```python
-from objectdiff import differ
+from listdiffer import differ
 
 @dataclass
 class TestItem:
@@ -96,7 +96,7 @@ assert len(result) == 0
 ### Different lists
 
 ```python
-from objectdiff import differ
+from listdiffer import differ
 
 @dataclass
 class TestItem:

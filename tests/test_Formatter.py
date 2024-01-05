@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from src.objectdiff.formatter import *
+from src.listdiffer.formatter import *
 from tests.TestItem import TestItem
 
 
