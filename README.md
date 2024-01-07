@@ -1,6 +1,6 @@
 # List Differ
 
-Version: 0.1.1
+Version: 0.2.0
 
 Calculates longest common sequence on text, lists of numbers or characters, or lists of objects.
 
