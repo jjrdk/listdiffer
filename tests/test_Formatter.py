@@ -53,4 +53,111 @@ lineX"""
 
         html = format_diff_text_as_html(text1, text2)
 
-        self.assertEqual("line1<br/>line2<br/><del>line3</del><br/><b>lineX</b>", html)
+        self.assertEqual("""line1
+<br/>
+line2
+<br/>
+<del>
+line3
+</del>
+<br/>
+<b>
+lineX
+</b>""", html)
+
+    def test_patch_text_formatting(self):
+        text1 = """line1
+line2
+line3"""
+        text2 = """line1
+line2
+lineX"""
+
+        patch = format_diff_text_as_patch(text1, text2)
+
+        self.assertEqual("""diff
+@@ -2,1 +2,1 @@
+    line1
+    line2
++   lineX
+-   line3
+""", patch)
+
+    def test_patch_text_formatting_with_padding(self):
+        text1 = """line1
+line2
+line3
+line4
+line5
+line6
+line7
+line8
+line9
+line10"""
+        text2 = """line1
+line2
+line3
+line4
+lineX
+line6
+line7
+line8
+line9
+line10"""
+
+        patch = format_diff_text_as_patch(text1, text2)
+
+        self.assertEqual("""diff
+@@ -4,1 +4,1 @@
+    line2
+    line3
+    line4
++   lineX
+-   line5
+    line6
+    line7
+    line8
+""", patch)
+
+    def test_patch_changes_formatting_with_padding(self):
+        text1 = """line1
+line2
+line3
+line4
+line5
+line6
+line7
+line8
+line9
+line10"""
+        text2 = """line1
+line2
+line3
+line4
+lineX
+line6
+line7
+line8
+lineY
+line10"""
+
+        patch = format_diff_text_as_patch(text1, text2)
+
+        self.assertEqual("""diff
+@@ -4,1 +4,1 @@
+    line2
+    line3
+    line4
++   lineX
+-   line5
+    line6
+    line7
+    line8
+@@ -8,1 +8,1 @@
+    line6
+    line7
+    line8
++   lineY
+-   line9
+    line10
+""", patch)

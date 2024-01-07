@@ -48,6 +48,58 @@ def format_items(diffs: list[Delta], source: list[T], other: list[T]) -> list[Co
     return result_lines
 
 
+def format_diff_text_as_patch(a: str, b: str) -> str:
+    """
+    Outputs the difference between the lists as a patch string.
+
+    :param a: The source string
+    :param b: The comparison string
+    :return: A patch formatted string.
+    """
+    text1_lines = a.split('\n')
+    text2_lines = b.split('\n')
+
+    return format_diff_as_patch(text1_lines, text2_lines)
+
+
+def format_diff_as_patch(source: list[T], compared: list[T], comment: str | None = None) -> str:
+    """
+    Outputs the difference between the lists as a patch string.
+
+    :param source: The source list
+    :param compared: The comparison list
+    :param comment: A comment to add to the patch.
+    :return: A patch formatted string.
+    """
+    deltas = diff(source, compared)
+    result = 'Subject: [PATCH] {}\n---\n'.format(comment) if comment is not None else ''
+    result += 'diff\n'
+
+    for delta in deltas:
+        start = max(0, delta.start_source - 3)
+        result += '@@ -{},{} +{},{} @@\n'.format(delta.start_source,
+                                                 delta.deleted_source,
+                                                 delta.start_compared,
+                                                 delta.inserted_compared)
+        result += '\n'.join(map(lambda s: '    {}'.format(s), source[start:delta.start_source]))
+        result += '\n'
+        result += '\n'.join(map(lambda s: '+   {}'.format(s), delta.added))
+        result += '\n'
+        deleted_rows = delta.start_source + delta.deleted_source
+        result += '\n'.join(
+            map(lambda s: '-   {}'.format(s),
+                source[delta.start_source: deleted_rows]))
+        result += '\n'
+        trailing_start = delta.start_source + delta.deleted_source
+        trailing_rows = min(3, len(source) - deleted_rows)
+        if trailing_rows > 0:
+            result += '\n'.join(
+                map(lambda s: '    {}'.format(s), source[trailing_start:trailing_start + trailing_rows]))
+            result += '\n'
+
+    return result
+
+
 def format_diff_text_as_html(a: str, b: str,
                              add_formatter: (str, str) = (START_BOLD, END_BOLD),
                              remove_formatter: (str, str) = (START_DEL, END_DEL)) -> str:
@@ -80,7 +132,7 @@ def format_diff_as_html(source: list[T], compared: list[T],
         _write_deleted_lines(item, source, result_lines, remove_formatter)
         _write_inserted_lines(item, compared, add_formatter, result_lines)
 
-    return ''.join(result_lines)
+    return '\n'.join(result_lines)
 
 
 def _emphasize() -> (str, str):
