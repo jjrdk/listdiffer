@@ -61,9 +61,9 @@ line2
 line3
 </del>
 <br/>
-<b>
+<ins>
 lineX
-</b>""", html)
+</ins>""", html)
 
     def test_patch_text_formatting(self):
         text1 = """line1
