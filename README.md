@@ -2,6 +2,8 @@
 
 Version: 0.2.0
 
+## Description
+
 Calculates longest common sequence on text, lists of numbers or characters, or lists of objects.
 
 When comparing objects, make sure that the objects are hashable, i.e. override the `__hash()__` method of the class.
@@ -9,6 +11,16 @@ It is also a good idea to override the `__eq()__` method if you have some custom
 This could be the case if your business logic considers close values as similar.
 
 If you want to compare two strings ignoring casing, then simply call `lower` on each string before passing as argument.
+
+## Patch String Generation
+
+The `format_diff_text_as_patch`, or the companion `format_diff_as_patch`, function can be used to generate a patch string 
+from the diff result.
+
+The patch string can be used to patch the first string to the second string. It can also be persisted and used later to 
+patch the original string, thereby serving as a change log.
+
+The patch string can be read back to a `List[Delta[str]]` using the `parse_patch_text` function in the `patch_parser` module.
 
 ## Examples
 
@@ -114,4 +126,25 @@ compare = [TestItem('test', 1), TestItem('test', 2), TestItem('test', 3), TestIt
 result = differ.diff(source, compare)
 
 assert len(result) == 1
+```
+
+### Example 4 - Patch string generation
+
+    ```python
+text1 = """line1
+line2
+line3"""
+        text2 = """line1
+line2
+lineX"""
+
+        patch = format_diff_text_as_patch(text1, text2)
+
+        assert """diff
+@@ -2,1 +2,1 @@
+    line1
+    line2
++   lineX
+-   line3
+""" == patch
 ```

@@ -6,8 +6,8 @@ T = TypeVar('T')
 
 START_DEL = "<del>"
 END_DEL = "</del>"
-START_BOLD = "<b>"
-END_BOLD = "</b>"
+START_BOLD = "<ins>"
+END_BOLD = "</ins>"
 LINEBREAK = "<br/>"
 
 
@@ -48,35 +48,39 @@ def format_items(diffs: list[Delta], source: list[T], other: list[T]) -> list[Co
     return result_lines
 
 
-def format_diff_text_as_patch(a: str, b: str) -> str:
+def format_diff_text_as_patch(source: str, comparison: str, comment: str | None = None, padding: int = 3) -> str:
     """
-    Outputs the difference between the lists as a patch string.
+    Outputs the difference between the strings as a patch string.
 
-    :param a: The source string
-    :param b: The comparison string
+    :param source: The source string
+    :param comparison: The comparison string
+    :param comment: A comment to add to the patch.
+    :param padding: The number of lines to include before and after the change.
     :return: A patch formatted string.
     """
-    text1_lines = a.split('\n')
-    text2_lines = b.split('\n')
+    text1_lines = source.split('\n')
+    text2_lines = comparison.split('\n')
 
-    return format_diff_as_patch(text1_lines, text2_lines)
+    return format_diff_as_patch(text1_lines, text2_lines, comment, padding)
 
 
-def format_diff_as_patch(source: list[T], compared: list[T], comment: str | None = None) -> str:
+def format_diff_as_patch(source: list[T], compared: list[T], comment: str | None = None, padding: int = 3) -> str:
     """
     Outputs the difference between the lists as a patch string.
 
     :param source: The source list
     :param compared: The comparison list
     :param comment: A comment to add to the patch.
+    :param padding: The number of lines to include before and after the change.
     :return: A patch formatted string.
     """
+    padding = max(0, padding)
     deltas = diff(source, compared)
     result = 'Subject: [PATCH] {}\n---\n'.format(comment) if comment is not None else ''
     result += 'diff\n'
 
     for delta in deltas:
-        start = max(0, delta.start_source - 3)
+        start = max(0, delta.start_source - padding)
         result += '@@ -{},{} +{},{} @@\n'.format(delta.start_source,
                                                  delta.deleted_source,
                                                  delta.start_compared,
@@ -91,7 +95,7 @@ def format_diff_as_patch(source: list[T], compared: list[T], comment: str | None
                 source[delta.start_source: deleted_rows]))
         result += '\n'
         trailing_start = delta.start_source + delta.deleted_source
-        trailing_rows = min(3, len(source) - deleted_rows)
+        trailing_rows = min(padding, len(source) - deleted_rows)
         if trailing_rows > 0:
             result += '\n'.join(
                 map(lambda s: '    {}'.format(s), source[trailing_start:trailing_start + trailing_rows]))
@@ -100,14 +104,24 @@ def format_diff_as_patch(source: list[T], compared: list[T], comment: str | None
     return result
 
 
-def format_diff_text_as_html(a: str, b: str,
+def format_diff_text_as_html(source: str, compared: str,
                              add_formatter: (str, str) = (START_BOLD, END_BOLD),
                              remove_formatter: (str, str) = (START_DEL, END_DEL)) -> str:
+    """
+        Outputs the difference between the strings as an HTML string.
+
+        :param source: The source list
+        :param compared: The comparison list
+        :param add_formatter: A function producing the HTML tags for added items.
+        :param remove_formatter: A function producing the HTML tags for removed items.
+        :return: An HTML formatted string.
+        """
+
     def clean(x):
         return x.rstrip('\r')
 
-    text1_lines = list(map(clean, a.split('\n')))
-    text2_lines = list(map(clean, b.split('\n')))
+    text1_lines = list(map(clean, source.split('\n')))
+    text2_lines = list(map(clean, compared.split('\n')))
 
     return format_diff_as_html(text1_lines, text2_lines, add_formatter, remove_formatter)
 
