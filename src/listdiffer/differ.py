@@ -23,7 +23,18 @@ class _DiffData:
     def __init__(self, data: list[int]):
         self.data: list[int] = data
         self.len: int = len(data)
-        self.modified: list[bool] = [False] * (self.len + 2)
+        self._modified: int = 0
+
+    def set_mask(self, position: int):
+        mask = 1 << position
+        self._modified = self._modified ^ mask
+
+    def unset_mask(self, position: int):
+        mask = ~(1 << position)
+        self._modified = self._modified & mask
+
+    def is_set(self, position: int):
+        return (1 << position) & self._modified != 0
 
 
 def diff_text(text_source: str, text_compared: str, trim_space: bool = False, ignore_space: bool = False) \
@@ -37,8 +48,10 @@ def diff_text(text_source: str, text_compared: str, trim_space: bool = False, ig
     :param ignore_space: True if the texts should be compared ignoring spaces in the text
     :return: A list of Delta[chr] describing the differences
     """
+
     def convert(text: str) -> list[int]:
         return [ord(c) for c in text if (True if c != ' ' else not ignore_space)]
+
     if trim_space:
         text_source = text_source.strip()
         text_compared = text_compared.strip()
@@ -95,16 +108,16 @@ def apply_deltas(source: list[T], deltas: list[Delta[T]]) -> list[T]:
 def _optimize(data: _DiffData) -> None:
     index1 = 0
     while index1 < data.len:
-        while index1 < data.len and not data.modified[index1]:
+        while index1 < data.len and not data.is_set(index1):
             index1 += 1
 
         index2 = index1
-        while index2 < data.len and data.modified[index2]:
+        while index2 < data.len and data.is_set(index2):
             index2 += 1
 
         if index2 < data.len and data.data[index1] == data.data[index2]:
-            data.modified[index1] = False
-            data.modified[index2] = True
+            data.unset_mask(index1)
+            data.set_mask(index2)
         else:
             index1 = index2
 
@@ -178,11 +191,11 @@ def _lcs(data_a: _DiffData, lower_a: int, upper_a: int, data_b: _DiffData, lower
 
     if lower_a == upper_a:
         while lower_b < upper_b:
-            data_b.modified[lower_b] = True
+            data_b.set_mask(lower_b)
             lower_b += 1
     elif lower_b == upper_b:
         while lower_a < upper_a:
-            data_a.modified[lower_a] = True
+            data_a.set_mask(lower_a)
             lower_a += 1
     else:
         x, y = _sms(data_a, lower_a, upper_a, data_b, lower_b, upper_b, down_vector, up_vector)
@@ -195,15 +208,15 @@ def _create_diffs(data_a: _DiffData, data_b: _DiffData, other: list[T]) -> list[
     index1 = 0
     index2 = 0
     while index1 < data_a.len or index2 < data_b.len:
-        if index1 < data_a.len and not data_a.modified[index1] and index2 < data_b.len and not data_b.modified[index2]:
+        if index1 < data_a.len and not data_a.is_set(index1) and index2 < data_b.len and not data_b.is_set(index2):
             index1 += 1
             index2 += 1
         else:
             num1 = index1
             num2 = index2
-            while index1 < data_a.len and (index2 >= data_b.len or data_a.modified[index1]):
+            while index1 < data_a.len and (index2 >= data_b.len or data_a.is_set(index1)):
                 index1 += 1
-            while index2 < data_b.len and (index1 >= data_a.len or data_b.modified[index2]):
+            while index2 < data_b.len and (index1 >= data_a.len or data_b.is_set(index2)):
                 index2 += 1
             if num1 < index1 or num2 < index2:
                 inserted_compared = index2 - num2
