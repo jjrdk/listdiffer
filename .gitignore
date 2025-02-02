@@ -1,3 +1,5 @@
 dist/
 .idea/
 src/object_diff.egg-info
+__pycache__/
+reports/
