@@ -1,0 +1,19 @@
+name: Build Python Package
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    - run: |
+        python -m pip install -U pip poetry
+        poetry config virtualenvs.create false
+      shell: bash
+    - name: Install dependencies
+      run: poetry install
+      shell: bash
+    - name: Run tests
+      run: |
+        pytest --junitxml=reports/result.xml
+      shell: bash
