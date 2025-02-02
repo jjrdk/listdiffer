@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from src.listdiffer.formatter import *
-from tests.TestItem import TestItem
+from listdiffer.formatter import *
+from TestItem import TestItem
 
 
 class TestFormatter(TestCase):

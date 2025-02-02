@@ -1,6 +1,6 @@
 from unittest import TestCase
-from src.listdiffer.differ import diff, diff_text, apply_deltas, diff_bytes
-from tests.TestItem import TestItem
+from listdiffer.differ import diff, diff_text, apply_deltas, diff_bytes
+from TestItem import TestItem
 
 
 class TestDiffer(TestCase):

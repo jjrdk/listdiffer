@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from src.listdiffer.differ import apply_deltas
-from src.listdiffer.patch_parser import parse_patch
+from listdiffer.differ import apply_deltas
+from listdiffer.patch_parser import parse_patch
 
 
 class ParseTests(TestCase):

@@ -1,7 +1,7 @@
 import re
 from typing import List
 
-from src.listdiffer.differ import Delta
+from listdiffer.differ import Delta
 
 
 def parse_patch(patch: str) -> List[Delta[str]]:
