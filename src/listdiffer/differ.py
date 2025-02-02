@@ -1,3 +1,4 @@
+import struct
 import typing
 from dataclasses import dataclass
 
@@ -63,6 +64,13 @@ def diff_text(text_source: str, text_compared: str, trim_space: bool = False, ig
                                     x.deleted_source,
                                     x.inserted_compared,
                                     list(map(lambda y: chr(y), x.added))), d))
+
+
+def diff_bytes(source: bytes, compared: bytes) -> list[Delta[bytes]]:
+    source_ints: typing.List[int] = list(struct.unpack(f"{len(source)}B", source))
+    compared_ints: typing.List[int] = list(struct.unpack(f"{len(compared)}B", compared))
+    d = diff(source_ints, compared_ints)
+    return d
 
 
 def diff(source: list[T], compared: list[T]) -> list[Delta[T]]:

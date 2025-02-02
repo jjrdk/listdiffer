@@ -1,5 +1,5 @@
 from unittest import TestCase
-from src.listdiffer.differ import diff, diff_text, apply_deltas
+from src.listdiffer.differ import diff, diff_text, apply_deltas, diff_bytes
 from tests.TestItem import TestItem
 
 
@@ -10,10 +10,22 @@ class TestDiffer(TestCase):
         result = diff_text(source, compare)
         self.assertEqual(0, len(result))
 
+    def test_equal_bytes(self):
+        source = "some text".encode('utf-8')
+        compare = "some text".encode('utf-8')
+        result = diff_bytes(source, compare)
+        self.assertEqual(0, len(result))
+
     def test_not_equal_text(self):
         source = "some text"
         compare = "text"
         result = diff_text(source, compare)
+        self.assertEqual(1, len(result))
+
+    def test_not_equal_bytes(self):
+        source = "some text".encode('utf-8')
+        compare = "text".encode('utf-8')
+        result = diff_bytes(source, compare)
         self.assertEqual(1, len(result))
 
     def test_equal_text_except_ignored_space(self):
