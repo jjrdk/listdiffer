@@ -16,15 +16,16 @@ classifiers = [
 ]
 keywords = ["lcs", "diff", "delta", "patch"]
 urls = { Homepage = "https://github.com/jjrdk/listdiffer" }
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 
 [tool.poetry]
 packages = [
     { include = "listdiffer", from = "src" }
 ]
 
-[tool.poetry.group.test.dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^8.3"
+mypy = "^1.15"
 
 [project.optional-dependencies]
 dev = ["pip-tools", "pytest"]
