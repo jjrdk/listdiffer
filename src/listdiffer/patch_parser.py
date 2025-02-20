@@ -19,7 +19,7 @@ def parse_patch(patch: str) -> List[Delta[str]]:
                 start_insert = int(match.group('start_insert'))
                 lines_inserted = int(match.group('lines_inserted'))
                 delta = Delta(start_delete, lines_deleted, start_insert, lines_inserted, [])
-        elif line.startswith('+'):
+        elif line.startswith('+') and delta:
             delta.added.append(line[4:])
 
     if delta:

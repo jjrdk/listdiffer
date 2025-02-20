@@ -1,12 +1,12 @@
 import struct
-import typing
+from typing import Dict, List, Generic, TypeVar
 from dataclasses import dataclass
 
-T = typing.TypeVar('T')
+T = TypeVar('T')
 
 
 @dataclass(frozen=True)
-class Delta(typing.Generic[T]):
+class Delta(Generic[T]):
     """Describes a difference between two compared items"""
     start_source: int
     """Indicates the start (0 based) of the difference in the source item."""
@@ -39,7 +39,7 @@ class _DiffData:
 
 
 def diff_text(text_source: str, text_compared: str, trim_space: bool = False, ignore_space: bool = False) \
-        -> list[Delta[chr]]:
+        -> List[Delta[str]]:
     """
     Calculates the difference between two strings using the longest common sequence algorithm.
 
@@ -66,14 +66,19 @@ def diff_text(text_source: str, text_compared: str, trim_space: bool = False, ig
                                     list(map(lambda y: chr(y), x.added))), d))
 
 
-def diff_bytes(source: bytes, compared: bytes) -> list[Delta[bytes]]:
-    source_ints: typing.List[int] = list(struct.unpack(f"{len(source)}B", source))
-    compared_ints: typing.List[int] = list(struct.unpack(f"{len(compared)}B", compared))
+def diff_bytes(source: bytes, compared: bytes) -> List[Delta[bytes]]:
+    source_ints: List[int] = list(struct.unpack(f"{len(source)}B", source))
+    compared_ints: List[int] = list(struct.unpack(f"{len(compared)}B", compared))
     d = diff(source_ints, compared_ints)
-    return d
+    return [Delta(
+        i.start_source,
+        i.start_compared,
+        i.deleted_source,
+        i.inserted_compared,
+        [x.to_bytes(4, 'little') for x in i.added]) for i in d]
 
 
-def diff(source: list[T], compared: list[T]) -> list[Delta[T]]:
+def diff(source: List[T], compared: List[T]) -> List[Delta[T]]:
     """
     Calculates the difference between two lists of objects using the longest common sequence algorithm.
 
@@ -81,7 +86,7 @@ def diff(source: list[T], compared: list[T]) -> list[Delta[T]]:
     :param compared: The list to compare
     :return: A list of DiffEntry describing the differences
     """
-    h: typing.Dict[T, int] = dict()
+    h: Dict[T, int] = dict()
     diff_data1 = _DiffData(_diff_items(source, h))
     diff_data2 = _DiffData(_diff_items(compared, h))
     h.clear()
@@ -233,7 +238,7 @@ def _create_diffs(data_a: _DiffData, data_b: _DiffData, other: list[T]) -> list[
     return diff_entries
 
 
-def _diff_items(source: list[T], h: typing.Dict[T, int]) -> list[int]:
+def _diff_items(source: list[T], h: Dict[T, int]) -> list[int]:
     count = len(h)
     source_length = len(source)
     num_array = [0] * source_length
